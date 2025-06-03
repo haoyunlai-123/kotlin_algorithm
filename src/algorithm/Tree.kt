@@ -1,6 +1,7 @@
 package algorithm
 
 import com.sun.source.tree.Tree
+import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
@@ -197,4 +198,19 @@ class Solution129 {
             else -> { dfs129(root.left,sum1); dfs129(root.right,sum1) }
         }
     }
+}
+
+
+
+// 110
+fun isBalanced(root: TreeNode?): Boolean {
+    fun dfs110(root: TreeNode?): Int {
+        if(root == null) return 0
+        val a = dfs110(root.left)
+        if(a == -1) return -1
+        val b = dfs110(root.right)
+        if(b == -1 || abs(a - b) > 1) return -1
+        return max(a,b) + 1
+    }
+    return dfs110(root) != -1
 }

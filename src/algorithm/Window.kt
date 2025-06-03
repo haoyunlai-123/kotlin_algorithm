@@ -63,3 +63,4 @@ fun getAverages(nums: IntArray, k: Int): IntArray = IntArray(nums.size){ -1 }.al
         sum -= nums[i - k*2]
     }
 }
+
