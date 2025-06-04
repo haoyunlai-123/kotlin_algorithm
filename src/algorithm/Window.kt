@@ -54,11 +54,11 @@ fun numOfSubarrays(arr: IntArray, k: Int, threshold: Int): Int {
 
 // 2090
 fun getAverages(nums: IntArray, k: Int): IntArray = IntArray(nums.size){ -1 }.also { arr ->
-    if(k*2 + 1 > nums.size) return@also
+    if (k*2 + 1 > nums.size) return@also
     var sum = 0
-    for(i in (0..nums.size - 1)) {
+    for (i in (0..nums.size - 1)) {
         sum += nums[i]
-        if(i < nums.size - k) continue
+        if (i < nums.size - k) continue
         arr[i] = sum / (2 * k + 1)
         sum -= nums[i - k*2]
     }
