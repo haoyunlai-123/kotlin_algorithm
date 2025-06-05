@@ -36,10 +36,31 @@ fun rob1(nums: IntArray): Int {
 
 // 2st 递推：求情况数组
 // 时间复杂度为o(n)
-fun rob(nums: IntArray): Int {
+fun rob2(nums: IntArray): Int {
     val dp = IntArray(nums.size + 2) { 0 }
     for ((i, num) in nums.withIndex()) {
         dp[i + 2] = max(dp[i + 1], dp[i] + num)
     }
     return dp[dp.lastIndex]
 }
+
+// 213
+fun rob213(nums: IntArray): Int {
+    val cache = IntArray(nums.size) { -1 }
+
+    fun dp(idx: Int): Int {
+        if (idx < 0) {
+            return 0
+        }
+        if (cache[idx] != -1) {
+            return cache[idx]
+        }
+        val a = max(dp(idx - 1), dp(idx - 2) + nums[idx])
+        cache[idx] = a
+        return a
+    }
+
+    return dp(nums.size - 1)
+}
+
+fun rob(nums: IntArray): Int = max(rob213(nums.sliceArray(1..nums.lastIndex)), nums[0] + rob213(nums.sliceArray(2..nums.lastIndex - 1)))
