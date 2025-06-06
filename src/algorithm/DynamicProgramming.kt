@@ -64,3 +64,27 @@ fun rob213(nums: IntArray): Int {
 }
 
 fun rob(nums: IntArray): Int = max(rob213(nums.sliceArray(1..nums.lastIndex)), nums[0] + rob213(nums.sliceArray(2..nums.lastIndex - 1)))
+
+// 2320
+fun countHousePlacements(n: Int): Int {
+    val mod = 1_000_000_007L
+    val cache = LongArray(n + 1) { -1L }
+
+    fun dp(n: Int): Long {
+        if (n == 0) {
+            return 1
+        }
+        if (n == 1) {
+            return 2
+        }
+        if (cache[n] != -1L) {
+            return cache[n]
+        }
+        val a = dp(n - 1) + dp(n - 2)
+        cache[n] = a
+        return a
+    }
+
+    val res: Long = dp(n)
+    return ((res * res) % mod).toInt()
+}
