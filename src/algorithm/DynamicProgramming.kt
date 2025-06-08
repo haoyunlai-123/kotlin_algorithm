@@ -1,6 +1,7 @@
 package algorithm
 
 import kotlin.math.max
+import kotlin.math.pow
 
 // 198
 // 0st 直接递归
@@ -87,4 +88,26 @@ fun countHousePlacements(n: Int): Int {
 
     val res: Long = dp(n)
     return ((res * res) % mod).toInt()
+}
+
+// 2787
+fun numberOfWays(
+    n: Int,
+    x: Int,
+): Int {
+    val mod = 1_000_000_007
+    val dp = IntArray(n + 1)
+    dp[0] = 1
+    for (i in 1..n) {
+        for (m in n downTo i) {
+            if (i.toDouble().pow(x.toDouble()) <= m) {
+                dp[m] = (dp[m] + dp[m - i.toDouble().pow(x.toDouble()).toInt()]) % mod
+            }
+        }
+    }
+    return dp[n]
+}
+
+fun main() {
+    println(numberOfWays(10, 2))
 }
