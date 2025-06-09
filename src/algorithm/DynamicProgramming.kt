@@ -108,6 +108,27 @@ fun numberOfWays(
     return dp[n]
 }
 
-fun main() {
-    println(numberOfWays(10, 2))
+// fun main() {
+//    println(numberOfWays(10, 2))
+// }
+
+// 3180
+fun maxTotalReward(rewardValues: IntArray): Int {
+    rewardValues.sort()
+    val n = rewardValues.size
+    val m = rewardValues[n - 1]
+    val dp = IntArray(m)
+    dp[0] = 0
+    for (x in rewardValues) {
+        for (y in m - 1 downTo x) {
+            var a = 0
+            if (y - x >= x) {
+                a = x - 1
+            } else {
+                a = y - x
+            }
+            dp[y] = max(dp[y], x + dp[a])
+        }
+    }
+    return dp[m - 1] + m
 }
