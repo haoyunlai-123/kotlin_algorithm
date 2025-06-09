@@ -132,3 +132,44 @@ fun maxTotalReward(rewardValues: IntArray): Int {
     }
     return dp[m - 1] + m
 }
+
+// 474
+fun findMaxForm(
+    strs: Array<String>,
+    m: Int,
+    n: Int,
+): Int {
+    fun String.one(): Int = count { it == '1' }
+
+    fun String.zero(): Int = count { it == '0' }
+    val dp = Array(m + 1) { IntArray(n + 1) { 0 } }
+    for (str in strs) {
+        for (i in m downTo 1) {
+            for (j in n downTo 1) {
+                dp[i][j] = dp[i][j].coerceAtLeast(dp[i - str.one()][j - str.zero()] + 1)
+            }
+        }
+    }
+    return dp[m][n]
+}
+
+fun findMaxForm1(
+    strs: Array<String>,
+    m: Int,
+    n: Int,
+): Int {
+    val dp = Array(m + 1) { IntArray(n + 1) }
+
+    strs.forEach { s ->
+        val zeros = s.count { it == '0' }
+        val ones = s.length - zeros
+
+        for (i in m downTo zeros) {
+            for (j in n downTo ones) {
+                dp[i][j] = maxOf(dp[i][j], dp[i - zeros][j - ones] + 1)
+            }
+        }
+    }
+
+    return dp[m][n]
+}
