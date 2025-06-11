@@ -192,3 +192,20 @@ fun waysToReachTarget(
     }
     return dp[target]
 }
+
+// 3180
+fun maxTotalReward1(rewardValues: IntArray): Int {
+    rewardValues.sort()
+    val max = rewardValues.last()
+    val dp = IntArray(max)
+    for (num in rewardValues) {
+        for (i in max - 1 downTo num) {
+            if (i - num >= num) {
+                dp[i] = maxOf(dp[i], dp[num - 1] + num)
+            } else {
+                dp[i] = maxOf(dp[i], dp[i - num] + num)
+            }
+        }
+    }
+    return dp.last() + max
+}
