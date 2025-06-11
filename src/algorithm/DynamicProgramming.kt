@@ -173,3 +173,22 @@ fun findMaxForm1(
 
     return dp[m][n]
 }
+
+// 2585
+fun waysToReachTarget(
+    target: Int,
+    types: Array<IntArray>,
+): Int {
+    val dp = IntArray(target + 1)
+    dp[0] = 1
+    for (type in types) {
+        val cnt = type[0]
+        val num = type[1]
+        for (n in (target downTo 1)) {
+            for (i in 1..minOf(cnt, n / num)) {
+                dp[n] = dp[n] + dp[n - i * num]
+            }
+        }
+    }
+    return dp[target]
+}
