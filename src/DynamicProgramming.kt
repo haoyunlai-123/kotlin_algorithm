@@ -1,6 +1,7 @@
 import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.max
+import kotlin.math.pow
 import kotlin.math.sign
 
 // 494
@@ -149,3 +150,97 @@ fun largestNumber1(cost: IntArray, target: Int): String {
 //fun main() {
 //    println(largestNumber(intArrayOf(7, 6, 5, 5, 5, 6, 8, 7, 8), 12))
 //}
+
+// 3489
+fun minZeroArray(nums: IntArray, queries: Array<IntArray>): Int {
+    queries.sortedWith ( compareByDescending { it[2] } )
+    var ans = 0
+    for (query in queries) {
+        val l = query[0]
+        val r = query[1]
+        val `val` = query[2]
+        var k = 0
+        for ((i, num) in nums.withIndex()) {
+            if (i >= l && i <= r) {
+                if (num >= `val`) {
+                    nums[i] -= (num / `val`) * `val`
+                    if (k < num / `val`)
+                        k = num / `val`
+                }
+            }
+        }
+        ans += k
+    }
+    for (num in nums) {
+        if (num != 0)
+            return -1
+    }
+    return ans
+}
+
+// 416
+fun canPartition1(nums: IntArray): Boolean {
+    var sum = nums.sum()
+    if (sum % 2 != 0) return false
+    sum /= 2
+    val dp = BooleanArray(sum + 1)
+    for (num in nums)
+        for (i in sum downTo num) {
+            dp[i] = dp[i] || dp[i - num]
+        }
+    return dp[sum]
+}
+
+// 494
+fun findTargetSumWays1(nums: IntArray, target: Int): Int {
+    var sum = nums.sum()
+    if (abs(target) > sum || sum % 2 != 0) return 0
+    sum = (sum + target) / 2
+    val dp = IntArray(sum + 1)
+    dp[0] = 1
+    for (num in nums)
+        for (i in sum downTo num) {
+            dp[i] = dp[i] + dp[i - num]
+        }
+    return dp[sum]
+}
+
+fun lengthOfLongestSubsequence1(nums: List<Int>, target: Int): Int {
+    val dp = IntArray(target + 1) { Int.MIN_VALUE }
+    dp[0] = 0
+    for (num in nums)
+        for (i in target downTo num) {
+            dp[i] = maxOf(dp[i], dp[i - num] + 1)
+        }
+    return dp[target]
+}
+
+// 2787
+fun numberOfWays(n: Int, x: Int): Int {
+    val mod = 1_000_000_007
+    val dp = IntArray(n + 1)
+    dp[0] = 1
+    for (num in 1..n) {
+        for (i in n downTo num.toDouble().pow(x.toDouble()).toInt()) {
+            dp[i] = (dp[i] + dp[i - num.toDouble().pow(x.toDouble()).toInt()]) % mod
+        }
+    }
+    return dp[n] % mod
+}
+
+// 3180
+fun maxTotalReward(rewardValues: IntArray): Int {
+    val sum = rewardValues.sum()
+    val dp = IntArray(sum + 1)
+    dp[0] = rewardValues[0]
+    for (num in rewardValues) {
+        for (i in sum downTo num) {
+            if (dp[i - sum] < num)
+                dp[i] = dp[i] + dp[i - sum]
+        }
+    }
+    for (i in dp.lastIndex downTo 1)
+        if (dp[i] != 0)
+            return dp[sum]
+    return 0
+}
