@@ -1,9 +1,8 @@
 
-class Node(var `val`: Int) {
-    var next: Node? = null
 
-    val length = "Hello".let {
-        println(it.length) // 5
-        it.length // 返回值
+inline fun <P, R> cachedFunction(crossinline f: (P) -> R): (P) -> R {
+    val cache = mutableMapOf<P, R>()
+    return { input ->
+        cache.getOrPut(input) { f(input) }
     }
 }

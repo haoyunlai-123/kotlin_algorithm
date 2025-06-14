@@ -209,3 +209,53 @@ fun maxTotalReward1(rewardValues: IntArray): Int {
     }
     return dp.last() + max
 }
+
+// 1449
+fun largestNumber(
+    cost: IntArray,
+    target: Int,
+): String {
+    val dp = IntArray(target + 1) { Int.MIN_VALUE }
+    dp[0] = 0
+    for (num in cost) {
+        for (i in num..target) {
+            dp[i] = maxOf(dp[i], dp[i - num] + 1)
+        }
+    }
+
+    if (dp[target] < 0) return "0"
+    val sb = StringBuilder()
+    var t = target
+    for (j in 8 downTo 0) {
+        val n = cost[j]
+        // 追踪dp路径
+        while (t >= n && dp[t] == dp[t - n] + 1) {
+            sb.append((j + 1).toString())
+            t -= n
+        }
+    }
+    return sb.toString()
+}
+
+// fun main() {
+//    println(largestNumber(intArrayOf(3, 2, 2), 9))
+// }
+
+// 1143
+fun longestCommonSubsequence(
+    text1: String,
+    text2: String,
+): Int {
+    val dp = Array(text1.length + 1) { IntArray(text2.length + 1) }
+    for (i in 1 until dp.size) {
+        for (j in 1 until dp[0].size) {
+            dp[i][j] =
+                if (text1[i - 1] == text2[j - 1]) {
+                    dp[i - 1][j - 1]
+                } else {
+                    maxOf(dp[i][j - 1], dp[j][i - 1])
+                }
+        }
+    }
+    return dp[text1.length][text2.length]
+}
