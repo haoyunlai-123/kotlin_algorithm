@@ -244,3 +244,276 @@ fun maxTotalReward(rewardValues: IntArray): Int {
             return dp[sum]
     return 0
 }
+
+fun closestCost1(baseCosts: IntArray, toppingCosts: IntArray, target: Int): Int {
+    baseCosts.sort()
+    if (baseCosts[0] >= target) return baseCosts[0]
+    val dp = BooleanArray(target * 2 + 1)
+    for (num in baseCosts) {
+        if (num <= target) {
+            dp[num] = true
+        }
+    }
+
+    for (num in baseCosts) {
+        for (i in 1..2) {
+            for (j in target * 2 downTo num) {
+                if (dp[j - num])
+                    dp[j] = true
+            }
+        }
+    }
+
+    var i = target; var j = target
+    while (true) {
+        when {
+            dp[i] && !dp[j] -> return i
+            !dp[i] && dp[j] -> return j
+            dp[i] && dp[j] -> return i
+        }
+        i--;j++
+    }
+}
+
+// 474
+fun findMaxForm(strs: Array<String>, m: Int, n: Int): Int {
+    val dp = Array(m + 1) { IntArray(n + 1) }
+    dp[m][n] = 0
+    for (str in strs) {
+        val cnt0 = str.count { it == '0' }
+        val cnt1 = str.count { it == '1' }
+        for (i in cnt0..m)
+            for (j in cnt1..n) {
+                dp[i][j] = maxOf(dp[i][j] + dp[i - cnt0][j - cnt1] + 1)
+            }
+    }
+    return dp[m][n]
+}
+
+fun minZeroArray1(nums: IntArray, queries: Array<IntArray>): Int {
+//    queries.sortWith(compareByDescending { it[2] })
+    var ans = -1
+    for ((j,num) in nums.withIndex()) {
+        val dp = BooleanArray(num + 1)
+        dp[0] = true
+        for ((i, query) in queries.withIndex()) {
+            if (query[0] > j || query[1] < j) continue
+            for (i in num downTo query[2]) {
+                dp[i] = dp[i] || dp[i - query[2]]
+            }
+            if (dp[num]) {
+                ans = maxOf(ans, i + 1)
+                break
+            }
+        }
+        if (!dp[num])
+            return -1
+    }
+    return ans
+}
+
+//fun main() {
+//    println(minZeroArray1(intArrayOf(4, 3, 2, 1), arrayOf(intArrayOf(1, 3, 2), intArrayOf(0, 2, 1))))
+//}
+
+// 1049
+fun lastStoneWeightII(stones: IntArray): Int {
+    val dp = BooleanArray(stones.sum() / 2 + 1)
+    dp[0] = true
+    for (stone in stones) {
+        for (i in dp.lastIndex downTo stone) {
+            dp[i] = dp[i] || dp[i - stone]
+        }
+    }
+    var left = 0
+    for (i in dp.lastIndex downTo 0) {
+        if (dp[i]) {
+            left = i
+            break
+        }
+    }
+    return abs(stones.sum() - 2 * left)
+}
+//fun main() {
+//    lastStoneWeightII(intArrayOf(2,7,4,1,8,1))
+//}
+
+fun closestCost2(baseCosts: IntArray, toppingCosts: IntArray, target: Int): Int {
+    baseCosts.sort()
+    if (baseCosts[0] >= target) return baseCosts[0]
+    val dp = BooleanArray(target * 2 + 1)
+    for (baseCost in baseCosts) {
+        dp[baseCost] = true
+    }
+
+    for (num in toppingCosts) {
+        repeat(2) {
+            for (i in target * 2 downTo num) {
+                if (dp[i - num])
+                    dp[i] = dp[i - num]
+            }
+        }
+    }
+
+    var left = target; var right = target
+    while (true) {
+        when {
+            dp[left] && dp[right] -> return left
+            dp[left] && !dp[right] -> return left
+            !dp[left] && dp[right] -> return right
+        }
+    }
+}
+
+//fun main() {
+//    closestCost2(intArrayOf(3), intArrayOf(2,5),5)
+//}
+
+
+fun change1(amount: Int, coins: IntArray): Int {
+    val dp = IntArray(amount + 1)
+    dp[0] = 1
+    for (coin in coins) {
+        for (i in coin..amount) {
+            dp[i] = dp[i] + dp[i - coin]
+        }
+    }
+    return dp.last()
+}
+
+fun coinChange2(coins: IntArray, amount: Int): Int {
+    val dp = IntArray(amount + 1) { Int.MAX_VALUE }
+    dp[0] = 0
+    for (coin in coins) {
+        for (i in coin..amount) {
+            dp[i] = minOf(dp[i], dp[i - coin] + 1)
+        }
+    }
+    return dp.last()
+}
+
+// 2585
+fun waysToReachTarget(target: Int, types: Array<IntArray>): Int {
+    val dp = IntArray(target + 1)
+    dp[0] = 1
+    for (type in types) {
+        val cnt = type[0]
+        val num = type[1]
+        for (i in 0..target - num) {
+           for (j in 1..minOf(cnt, target / num)) {
+               dp[i + j * num] = dp[i + j * num] + dp[i + j * num - num]
+           }
+        }
+    }
+    return dp.last()
+}
+
+// 72
+fun minDistance(word1: String, word2: String): Int {
+    val n = word1.length
+    val m = word2.length
+    val dp = Array(n + 1) { IntArray(m + 1) }
+    for (i in 1..n) dp[i][0] = i
+    for (j in 1..m) dp[0][j] = j
+    for (i in 1..n) {
+        for (j in 1..m) {
+            dp[i][j] = if (word1[i - 1] == word2[j - 1]) dp[i - 1][j - 1]
+            else minOf(dp[i - 1][j - 1] + 1, dp[i - 1][j] + 1, dp[i][j - 1] + 1)
+        }
+    }
+    return dp.last().last()
+}
+fun minDistance1(word1: String, word2: String): Int {
+    val n = word1.length
+    val m = word2.length
+    val dp = IntArray(m + 1)
+    for (i in 1..m) dp[i] = i
+    for (i in 1..n) {
+        var pre = 0
+        dp[0] = i
+        for (j in 1..m) {
+            val temp = dp[j]
+            dp[j] = if (word1[i - 1] == word2[j - 1]) dp[j - 1]
+            else minOf(pre + 1, dp[j - 1] + 1, dp[j] + 1)
+            pre = temp
+        }
+    }
+    return dp[m]
+}
+
+// 1035
+fun maxUncrossedLines(nums1: IntArray, nums2: IntArray): Int {
+    val n = nums1.size
+    val m = nums2.size
+    val dp = Array(n + 1) { IntArray(m + 1) }
+    for (i in 1..n) dp[i][0] = i
+    for (j in 1..m) dp[0][j] = j
+    for (i in 1..n) {
+        for (j in 1..m) {
+            dp[i][j] = if (nums1[i - 1] == nums2[j - 1]) dp[i - 1][j - 1]
+            else minOf(dp[i][j - 1] + 1, dp[i - 1][j] + 1)
+        }
+    }
+    return ((n + m) - dp[n][m]) ushr 1
+}
+fun maxUncrossedLines1(nums1: IntArray, nums2: IntArray): Int {
+    val n = nums1.size
+    val m = nums2.size
+    val dp = IntArray(m + 1)
+    for (i in 1..m) dp[i] = i
+    for (i in 1..n) {
+        var pre = dp[0]
+        dp[0] = i
+        for (j in 1..m) {
+            val temp = dp[j]
+            dp[j] = if (nums1[i - 1] == nums2[j - 1]) pre
+            else minOf(dp[j] + 1, dp[j - 1] + 1)
+            pre = temp
+        }
+    }
+    return ((n + m) - dp[m]) ushr 1
+}
+
+// 1458
+fun maxDotProduct(nums1: IntArray, nums2: IntArray): Int {
+    val n = nums1.size
+    val m = nums2.size
+    val dp = Array(n + 1) { IntArray(m + 1) { Int.MAX_VALUE } }
+    for (i in 1..n) {
+        for (j in 1..m) {
+            val sum = nums1[i - 1] * nums2[j - 1]
+            dp[i][j] = maxOf(
+                dp[i - 1][j - 1] + sum,
+                dp[i][j - 1],
+                dp[i - 1][j],
+                sum
+                )
+        }
+    }
+    return dp[n][m]
+}
+
+fun maxDotProduct1(nums1: IntArray, nums2: IntArray): Int {
+    val n = nums1.size
+    val m = nums2.size
+    val dp = IntArray(m + 1) { Int.MIN_VALUE }
+    for (i in 1..n) {
+        var pre = dp[0]
+        for (j in 1..m) {
+            val temp = dp[j]
+            val sum = nums1[i - 1] * nums2[j - 1]
+            val ext: Int = if (dp[j - 1] == Int.MIN_VALUE) {
+                sum
+            }else
+                dp[j - 1] + sum
+            dp[j] = maxOf(
+                sum,
+                ext,
+                dp[j],
+                dp[j - 1]
+            )
+            pre = temp
+        }
+    }
+    return dp.last()
+}
