@@ -517,3 +517,165 @@ fun maxDotProduct1(nums1: IntArray, nums2: IntArray): Int {
     }
     return dp.last()
 }
+
+fun maxDotProduct2(nums1: IntArray, nums2: IntArray): Int {
+    val n = nums1.size
+    val m = nums2.size
+    val dp = Array(n + 1) { IntArray(m + 1) { Int.MIN_VALUE } }
+    for (i in 1..n) {
+        for (j in 1..m) {
+            val sum = nums1[i - 1] * nums2[j - 1]
+            val temp = if (dp[i - 1][j - 1] == Int.MIN_VALUE) sum
+            else sum + dp[i - 1][j - 1]
+            dp[i][j] = maxOf(
+                sum,
+                temp,
+                dp[i][j - 1],
+                dp[i - 1][j]
+            )
+        }
+    }
+    return dp[n][m]
+}
+
+// 718
+fun findLength(nums1: IntArray, nums2: IntArray): Int {
+    val n = nums1.size
+    val m = nums2.size
+    var maxLen = 0
+    val dp = Array(n + 1) { IntArray(m + 1) }
+    for (i in 1..n) {
+        for (j in 1..m) {
+            if (nums1[i - 1] == nums2[j - 1]) {
+                dp[i][j] = dp[i - 1][j - 1] + 1
+                maxLen = max(maxLen, dp[i][j])
+            }
+        }
+    }
+    return dp.last().last()
+}
+
+fun findLength1(nums1: IntArray, nums2: IntArray): Int {
+    val n = nums1.size
+    val m = nums2.size
+    val dp = IntArray(m + 1)
+    var maxLen = 0
+    for (i in 1..n) {
+        var pre = dp[0]
+        for (j in 1..m) {
+            val temp = dp[j]
+            if (nums1[i - 1] == nums2[j - 1]) {
+                dp[j] = pre + 1
+                maxLen = max(maxLen, dp[j])
+            }
+            pre = temp
+        }
+    }
+    return maxLen
+}
+
+fun maxUncrossedLines2(nums1: IntArray, nums2: IntArray): Int {
+    val n = nums1.size
+    val m = nums2.size
+    val dp = Array(n + 1) { IntArray(m + 1) }
+    for (i in 1..m) dp[0][i] = i
+    for (i in 1..m) dp[i][0] = i
+    for (i in 1..n) {
+        for (j in 1..m) {
+            dp[i][j] = if (nums1[i - 1] == nums2[j - 1]) dp[i - 1][j - 1]
+            else minOf(dp[i][j - 1] + 1, dp[i - 1][j] + 1)
+        }
+    }
+    return ((n + m) - dp.last().last()) ushr 1
+}
+
+fun minDistance2(word1: String, word2: String): Int {
+    val n = word1.length
+    val m = word2.length
+    val dp = Array(n + 1) { IntArray(m + 1) }
+    for (i in 1..n) dp[0][i] = i
+    for (i in 1..m) dp[i][0] = i
+    for (i in 1..n) {
+        for (j in 1..m) {
+            dp[i][j] = if (word1[i - 1] == word2[j - 1]) dp[i - 1][j - 1]
+            else minOf(
+                dp[i - 1][j] + 1, // 删除
+                dp[i - 1][j - 1] + 1, // 替换
+                dp[i][j - 1] + 1 // 插入
+            )
+        }
+    }
+    return dp.last().last()
+}
+
+fun minDistance3(word1: String, word2: String): Int {
+    val n = word1.length
+    val m = word2.length
+    val dp = IntArray(m + 1)
+    for (i in 1..m) dp[i] = i
+    for (i in 1..n) {
+        var pre = dp[0]
+        dp[0] = i
+        for (j in 1..m) {
+            val temp = dp[j]
+            dp[j] = if (word1[i - 1] == word2[j - 1]) pre
+            else minOf(
+                dp[j] + 1,
+                pre + 1,
+                dp[j - 1] + 1
+            )
+            pre = temp
+        }
+    }
+    return dp.last()
+}
+
+// 583
+fun minDistance4(word1: String, word2: String): Int {
+    val n = word1.length
+    val m = word2.length
+    val dp = IntArray(m + 1)
+    for (i in 1..m) dp[i] = i
+    for (i in 1..n) {
+        var pre = dp[0]
+        dp[0] = i
+        for (j in 1..m) {
+            val temp = dp[j]
+            dp[j] = if (word1[i - 1] == word2[j - 1]) pre
+            else minOf(dp[j] + 1, dp[j - 1] + 1)
+            pre = temp
+        }
+    }
+    return dp.last()
+}
+
+// 712
+fun minimumDeleteSum(s1: String, s2: String): Int {
+    val n = s1.length
+    val m = s2.length
+    val dp = IntArray(m + 1)
+    for (i in 1..m) dp[i] = dp[i - 1] + s2[i - 1].code
+    for (i in 1..n) {
+        var pre = dp[0]
+        dp[0] += s1[i - 1].code
+        for (j in 1..m) {
+            val temp = dp[j]
+            dp[j] = if (s1[i - 1] == s1[j - 1]) pre
+            else minOf(dp[j] + s1[i - 1].code, dp[j - 1] + s2[j - 1].code)
+            pre = temp
+        }
+    }
+    return dp.last()
+}
+
+fun waysToReachTarget1(target: Int, types: Array<IntArray>): Int {
+    val mod = 1_000_000_007
+    val dp = IntArray(target + 1).also { it[0] = 1 }
+    for ((cnt, num) in types) {
+        for (i in target downTo num)
+            for (j in 1..minOf(cnt, i / num)) {
+                dp[i] = (dp[i] + dp[i - j * num]) % mod
+            }
+    }
+    return dp.last() % mod
+}
