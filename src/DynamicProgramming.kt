@@ -679,3 +679,97 @@ fun waysToReachTarget1(target: Int, types: Array<IntArray>): Int {
     }
     return dp.last() % mod
 }
+
+// 3290
+fun maxScore(a: IntArray, b: IntArray): Long {
+    val n = b.size
+    val dp = Array(n + 1) { LongArray(5) }
+    for (i in 1..4)
+        dp[0][i] = Long.MIN_VALUE / 2
+    dp[0][0] = 0
+    for (i in 0..n) {
+        for (j in 0..4) {
+            dp[i][j] = maxOf(
+                b[i - 1] * a[j - 1].toLong() + dp[i - 1][j - 1], // 选
+                dp[i - 1][j] // 不选
+            )
+        }
+    }
+    return dp.last().last()
+}
+
+// 115
+fun numDistinct(s: String, t: String): Int {
+    val n = s.length
+    val m = t.length
+    val dp = Array(n + 1) { IntArray(m + 1) }.also {
+        for (i in 1..n) it[i][0] = 1
+    }
+    for (i in 1..n) {
+        for (j in 1..m) {
+            dp[i][j] = if (s[i - 1] == t[j - 1]) dp[i - 1][j - 1] + dp[i - 1][j]
+            else dp[i - 1][j]
+        }
+    }
+    return dp.last().last()
+}
+
+fun numDistinct1(s: String, t: String): Int {
+    val n = s.length
+    val m = t.length
+    val dp = IntArray(m + 1).also { it[0] = 1 }
+    for (i in 1..n) {
+        var pre = dp[0]
+        for (j in 1..m) {
+            val temp = dp[j]
+            dp[j] = if (s[i - 1] == t[j - 1]) pre + temp
+            else temp
+            pre = temp
+        }
+    }
+    return dp.last()
+}
+
+// 3316
+fun maxRemovals(source: String, pattern: String, targetIndices: IntArray): Int {
+    val n = source.length
+    val m = pattern.length
+    // abbaab aba
+    val hash = targetIndices.toHashSet()
+    val dp = Array(n + 1) { IntArray(m + 1) { Int.MIN_VALUE / 2 } }
+    dp[0][0] = 0
+    for (i in 1..n) {
+        val isdel = if (hash.contains(i - 1)) 1 else 0
+        dp[i][0] = dp[i - 1][0] + isdel
+        for (j in 1..m) {
+            if (source[i - 1] == pattern[j - 1]) {
+                dp[i][j] = maxOf(dp[i - 1][j - 1] + isdel, dp[i - 1][j])
+            } else {
+                dp[i][j] = dp[i - 1][j] + isdel
+            }
+        }
+    }
+    return dp.last().last()
+}
+
+// 1639
+fun numWays(words: Array<String>, target: String): Int {
+    val MOD = 1_000_000_007
+    val n = words[0].length
+    val nw = words.size
+    val m = target.length
+    val dp = Array(n + 1) { IntArray(m + 1) }
+    dp[0][0] = 1
+    for (i in 1..n) {
+        dp[i][0] = 1
+        for (j in 1..m) {
+            var k = 0
+            repeat(nw) {
+                if (words[it][i - 1] == target[j - 1]) k++
+            }
+            val add = (k.toLong() * dp[i - 1][j - 1]) % MOD
+            dp[i][j] = ((dp[i - 1][j] + add) % MOD).toInt()
+        }
+    }
+    return dp[n][m]
+}
