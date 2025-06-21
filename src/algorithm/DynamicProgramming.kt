@@ -251,11 +251,91 @@ fun longestCommonSubsequence(
         for (j in 1 until dp[0].size) {
             dp[i][j] =
                 if (text1[i - 1] == text2[j - 1]) {
-                    dp[i - 1][j - 1]
+                    dp[i - 1][j - 1] + 1
                 } else {
                     maxOf(dp[i][j - 1], dp[j][i - 1])
                 }
         }
     }
     return dp[text1.length][text2.length]
+}
+
+fun longestCommonSubsequence1(
+    text1: String,
+    text2: String,
+): Int {
+    val n = text1.length
+    val m = text2.length
+    val dp = IntArray(m + 1) { 0 }
+    var pre = 0
+    for (i in 1..n) {
+        for (j in 1..m) {
+            val temp = dp[j]
+            dp[j] = if (text1[i - 1] == text2[j - 1]) pre + 1 else maxOf(dp[j], dp[j - 1])
+            pre = temp
+        }
+    }
+    return dp[m]
+}
+
+// 583
+fun minDistance(
+    word1: String,
+    word2: String,
+): Int {
+    val n = word1.length
+    val m = word2.length
+    val dp = IntArray(m + 1)
+    for (i in 1..n) {
+        var pre = 0
+        for (j in 1..m) {
+            val temp = dp[j]
+            dp[j] = if (word1[i - 1] == word2[j - 1]) pre + 1 else maxOf(dp[j], dp[j - 1])
+            pre = temp
+        }
+    }
+    return (n - dp[m]) + (m - dp[m])
+}
+
+// 712
+fun minimumDeleteSum(
+    s1: String,
+    s2: String,
+): Int {
+    val n = s1.length
+    val m = s2.length
+    val dp = Array(n + 1) { IntArray(m + 1) { Int.MAX_VALUE } }
+    for (i in 1..n) {
+        for (j in 1..m) {
+            dp[i][j] =
+                if (s1[i - 1] == s2[j - 1]) {
+                    dp[i - 1][j - 1] + s1[i - 1].code
+                } else {
+                    minOf(dp[i][j - 1], dp[i - 1][j])
+                }
+        }
+    }
+    return dp[n][m]
+}
+
+fun minimumDeleteSum1(
+    s1: String,
+    s2: String,
+): Int {
+    val n = s1.length
+    val m = s2.length
+    if (s1.isEmpty()) return s2.sumOf { ch -> ch.code }
+    if (s2.isEmpty()) return s1.sumOf { ch -> ch.code }
+    val dp = Array(n + 1) { IntArray(m + 1) }
+    for (i in 1..n) {
+        for (j in 1..m) {
+            dp[i][j] =
+                if (s1[i - 1] == s2[j - 1]) {
+                    dp[i - 1][j - 1]
+                } else {
+                    minOf(dp[i][j - 1] + s2[j - 1].code, dp[i - 1][j] + s1[i - 1].code)
+                }
+        }
+    }
+    return dp[n][m]
 }
