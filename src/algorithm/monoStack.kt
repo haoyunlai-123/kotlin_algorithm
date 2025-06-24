@@ -1,5 +1,3 @@
-package algorithm
-
 // 1475
 fun finalPrices1(prices: IntArray): IntArray =
     IntArray(prices.size).also { arr ->
@@ -77,6 +75,75 @@ fun nextGreaterElements2(nums: IntArray): IntArray {
         }
         ans[idx] = if (stack.isNotEmpty()) stack.first() else -1
         stack.addFirst(nums[idx])
+    }
+    return ans
+}
+
+// 2866
+fun maximumSumOfHeights(maxHeights: List<Int>): Long {
+    val n = maxHeights.size
+    val left = LongArray(n)
+    val right = LongArray(n)
+    val stack = ArrayDeque<Int>()
+    for (i in n - 1 downTo 0) {
+        while (stack.isNotEmpty() && maxHeights[stack.first()] > maxHeights[i]) {
+            stack.removeFirst()
+        }
+        val j = if (stack.isEmpty()) n else stack.first()
+        val width = j - i
+        right[i] = (if (j == n) 0 else right[j]) + width.toLong() * maxHeights[i]
+        stack.addFirst(i)
+    }
+    stack.clear()
+    for (i in 0 until n - 1) {
+        while (stack.isNotEmpty() && maxHeights[stack.first()] > maxHeights[i]) {
+            stack.removeFirst()
+        }
+        val j = if (stack.isEmpty()) -1 else stack.first()
+        val width = i - j
+        left[i] = (if (j == -1) 0 else left[j]) + width.toLong() * maxHeights[i]
+        stack.addFirst(i)
+    }
+
+    var ans = 0L
+    for (i in 0 until n) {
+        ans = maxOf(ans, left[i] + right[i] - maxHeights[i])
+    }
+    return ans
+}
+
+// 1944
+fun canSeePersonsCount(heights: IntArray): IntArray {
+    val n = heights.size
+    val stack = ArrayDeque<Int>()
+    val ans = IntArray(n)
+    for (i in n - 1 downTo 0) {
+        var cnt = 0
+        while (stack.isNotEmpty() && stack.first() < heights[i]) {
+            cnt++
+            stack.removeFirst()
+        }
+        if (stack.isNotEmpty()) cnt++
+        ans[i] = cnt
+        stack.addFirst(heights[i])
+    }
+    return ans
+}
+
+// 962
+fun maxWidthRamp(nums: IntArray): Int {
+    val stack = ArrayDeque<Int>()
+    for ((i, num) in nums.withIndex()) {
+        while (stack.isEmpty() || nums[stack.first()] > num) {
+            stack.addFirst(i)
+        }
+    }
+    var ans = 0
+    for (i in nums.size - 1 downTo 0) {
+        while (stack.isNotEmpty() && nums[stack.first()] <= nums[i]) {
+            ans++
+            stack.removeFirst()
+        }
     }
     return ans
 }
