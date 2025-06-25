@@ -147,3 +147,45 @@ fun maxWidthRamp(nums: IntArray): Int {
     }
     return ans
 }
+
+// 2454
+fun secondGreaterElement(nums: IntArray): IntArray {
+    val n = nums.size
+    val ans = IntArray(n) { -1 }
+    val sta1 = ArrayDeque<Int>()
+    val sta2 = ArrayDeque<Int>()
+    // 7 10 4 0 6
+    for (i in nums.indices) {
+        while (sta2.isNotEmpty() && nums[i] > nums[sta2.first()]) {
+            ans[sta2.removeFirst()] = nums[i]
+        }
+        val temp = mutableListOf<Int>()
+        while (sta1.isNotEmpty() && nums[i] > nums[sta1.first()]) {
+            temp.add(sta1.removeFirst())
+        }
+        for (j in temp.size - 1 downTo 0) {
+            sta2.addFirst(j)
+        }
+        sta1.addFirst(i)
+    }
+    return ans
+}
+
+// 1130
+fun mctFromLeafValues(arr: IntArray): Int {
+    val sta = ArrayDeque<Int>()
+    sta.addFirst(Int.MAX_VALUE)
+    var ans = 0
+    for (num in arr) {
+        while (sta.first() <= num) {
+            val tmp = sta.removeFirst()
+            ans += minOf(num, sta.first()) * tmp
+        }
+        sta.addFirst(num)
+    }
+    while (sta.size > 2) {
+        val tmp = sta.removeFirst()
+        ans += tmp * sta.first()
+    }
+    return ans
+}
